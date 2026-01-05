@@ -1,0 +1,336 @@
+/* iPad OS 2026 - ULTIMATE CRYSTAL LIQUID EDITION
+   Layout: 10 Apps Grid (5x2) + Refined Status Bar
+*/
+
+:root {
+    --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+    
+    /* Configurações de Cristal Líquido (High-Fidelity) */
+    --crystal-fill: linear-gradient(0deg, #676767 0%, #676767 100%), #D0D0D0;
+    --crystal-shadow: 
+        inset 1.5px 1.5px 0 0 rgba(255, 255, 255, 0.45), 
+        inset 0.8px 0.8px 0.8px 0 #1C1C1C, 
+        inset -0.8px -0.8px 0.8px 0 #1C1C1C, 
+        inset 0 0 3px 0 #FFF;
+    --crystal-blur: blur(30px) saturate(190%);
+    --crystal-filter: drop-shadow(0 0 80px rgba(204, 204, 204, 0.4));
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--ios-font);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- HARDWARE FRAME --- */
+#ipad-wrapper {
+    background: #080808;
+    padding: 18px;
+    border-radius: 60px;
+    border: 3px solid #2a2a2a;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+}
+
+.screen {
+    width: 1024px;
+    height: 768px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 44px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- STATUS BAR REFINADA --- */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 45px;
+    height: 38px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.25), transparent);
+    letter-spacing: 0.3px;
+}
+
+.status-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.battery-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.battery-level {
+    width: 24px;
+    height: 12px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 3.5px;
+    position: relative;
+    padding: 1px;
+}
+
+.battery-level::after {
+    content: '';
+    display: block;
+    width: 80%; /* Nível da bateria */
+    height: 100%;
+    background: #fff;
+    border-radius: 1px;
+}
+
+.battery-level::before {
+    content: '';
+    position: absolute;
+    right: -3.5px;
+    top: 3px;
+    width: 2px;
+    height: 4.5px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 0 1px 1px 0;
+}
+
+/* --- RELÓGIO: CRISTAL LÍQUIDO --- */
+.ios-clock-container {
+    margin-top: 45px;
+    text-align: center;
+    filter: var(--crystal-filter);
+    pointer-events: none;
+}
+
+#ios-time {
+    font-size: 135px;
+    font-weight: 800;
+    letter-spacing: -5px;
+    line-height: 0.85;
+    color: white;
+}
+
+#ios-date {
+    font-size: 26px;
+    font-weight: 500;
+    color: #D0D0D0;
+    margin-top: 5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* --- GRADE DE APLICATIVOS (SISTEMA 10 APPS: 5x2) --- */
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5 Colunas */
+    grid-template-rows: repeat(2, 130px);   /* 2 Linhas definidas */
+    gap: 35px 50px;
+    padding: 50px 95px;
+    flex-grow: 1;
+    align-content: start;
+    justify-items: center;
+}
+
+.app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    width: 100px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.app-item:active { transform: scale(0.88); }
+
+.icon-box {
+    width: 85px;
+    height: 85px;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background-size: cover;
+}
+
+.icon-box i {
+    font-size: 38px;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.app-item span {
+    color: white;
+    font-size: 13.5px;
+    margin-top: 10px;
+    font-weight: 600;
+    text-shadow: 0 2px 8px rgba(0,0,0,1);
+    text-align: center;
+    width: 100%;
+}
+
+/* --- DOCK: CRISTAL LÍQUIDO SKEUOMORPHIC --- */
+.dock-wrapper {
+    position: absolute;
+    bottom: 35px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.liquid-dock {
+    height: 105px;
+    padding: 0 28px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    
+    /* Mix de Vidro e Metal */
+    background: linear-gradient(0deg, rgba(103, 103, 103, 0.4) 0%, rgba(103, 103, 103, 0.4) 100%), rgba(208, 208, 208, 0.2);
+    background-blend-mode: plus-lighter, plus-darker;
+    backdrop-filter: var(--crystal-blur);
+    -webkit-backdrop-filter: var(--crystal-blur);
+    box-shadow: var(--crystal-shadow);
+    
+    transition: all 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+}
+
+.dock-icon {
+    width: 75px;
+    height: 75px;
+    border-radius: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    color: white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.4);
+}
+
+.dock-icon:hover {
+    transform: translateY(-18px) scale(1.2);
+}
+
+/* --- APPLE JIGGLE MODE (TREMOR ASSÍNCRONO) --- */
+@keyframes jiggleHandshake {
+    0% { transform: rotate(-2.2deg) translate(-0.5px, 0.5px); }
+    25% { transform: rotate(1.8deg) translate(0.5px, -0.5px); }
+    50% { transform: rotate(-2deg) translate(0.5px, 0.5px); }
+    75% { transform: rotate(2.2deg) translate(-0.5px, -0.5px); }
+    100% { transform: rotate(-2.2deg) translate(-0.5px, 0.5px); }
+}
+
+.editing .app-item, .editing .dock-icon {
+    animation: jiggleHandshake 0.26s infinite ease-in-out;
+}
+
+.editing .app-item:nth-child(even), .editing .dock-icon:nth-child(even) {
+    animation-duration: 0.3s;
+    animation-direction: reverse;
+}
+
+/* --- APP WINDOW: ZOOM PHYSICS --- */
+.app-window {
+    position: absolute;
+    inset: 0;
+    z-index: 1000;
+    background: #f2f2f7;
+    border-radius: 44px;
+    display: flex;
+    flex-direction: column;
+    animation: iosLaunch 0.5s cubic-bezier(0.4, 0, 0, 1);
+}
+
+.app-window.hidden { display: none; }
+
+@keyframes iosLaunch {
+    from { transform: scale(0.6); opacity: 0; border-radius: 120px; }
+    to { transform: scale(1); opacity: 1; border-radius: 44px; }
+}
+
+.app-header {
+    height: 75px;
+    padding: 0 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.back-btn {
+    background: rgba(0, 122, 255, 0.12);
+    border: none;
+    color: #007aff;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* --- CORES E GRADIENTES DOS APPS --- */
+.bg-blue   { background: linear-gradient(145deg, #007aff, #0051a8); }
+.bg-green  { background: linear-gradient(145deg, #34c759, #248a3d); }
+.bg-red    { background: linear-gradient(145deg, #ff3b30, #b32a22); }
+.bg-purple { background: linear-gradient(145deg, #af52de, #7a399b); }
+.bg-agrey { background: linear-gradient(145deg, #d1d3d9 , #898d90 ); }
+.bg-orange { background: linear-gradient(145deg, #ff9500, #b36800); }
+
+/* --- HOME INDICATOR --- */
+.home-indicator {
+    position: absolute;
+    bottom: 12px;
+    width: 180px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.8);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 1001;
+    transition: 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.home-indicator:hover {
+    background: #fff;
+    width: 210px;
+}
+
+/* --- CORREÇÃO PARA APPS EM IFRAME --- */
+
+#app-content-area {
+    flex: 1;           /* Ocupa todo o espaço abaixo do header */
+    position: relative; /* Necessário para o iframe absoluto */
+    width: 100%;
+    overflow: hidden;   /* O scroll será controlado dentro do iframe */
+}
+
+#app-content-area iframe {
+    position: absolute;
+    inset: 0;           /* Preenche 100% da área disponível */
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Ajuste de cor do indicador quando um app está aberto */
+.app-window ~ .home-indicator {
+    background: rgba(0, 0, 0, 0.2);
+}

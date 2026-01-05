@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablet - GOV</title>
+    
+    <link rel="stylesheet" href="css/main.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+<body>
+
+    <div id="ipad-wrapper">
+        <div class="ipad-frame">
+            
+            <div class="screen" id="ipad-screen">
+                
+                <div class="status-bar">
+                    <div class="status-left">
+                        <span id="operator-name">CDS - NexunDev</span>
+                    </div>
+                    <div class="status-right">
+                        <i class="fas fa-signal"></i>
+                        <i class="fas fa-wifi"></i>
+                        <span id="battery-percent" style="margin-left: 5px;">100%</span>
+                        <i class="fas fa-battery-full" style="margin-left: 5px;"></i>
+                    </div>
+                </div>
+
+                <div id="home-screen" class="home-layout">
+                    
+                    <div class="ios-clock-container">
+                        <div id="ios-time">00:00</div>
+                        <div id="ios-date">Sábado, 3 de Janeiro</div>
+                    </div>
+
+                    <div id="app-grid" class="app-grid">
+                        </div>
+                </div>
+
+                <div id="app-window" class="app-window hidden glass-effect animate__animated">
+                    <div class="app-header">
+                        <button class="back-btn" onclick="closeApp()">
+                            <i class="fas fa-chevron-left"></i> Início
+                        </button>
+                        <h2 id="active-app-title">Aplicação</h2>
+                        <div style="width: 80px;"></div> 
+                    </div>
+
+                    <div id="app-content-area"></div>
+                </div>
+
+                <div class="dock-wrapper">
+                    <div class="liquid-dock glass-effect" id="dock-container">
+                        </div>
+                </div>
+
+                <div class="home-indicator" onclick="closeApp()"></div>
+
+            </div> </div> </div> <script src="js/script.js"></script>
+    
+    <script>
+        /* Fallback de Inicialização: Garante que o iPad tenha um wallpaper 
+           mesmo antes do carregamento total do script.js */
+        document.addEventListener('DOMContentLoaded', () => {
+            const screen = document.getElementById('ipad-screen');
+            if (!screen.style.backgroundImage) {
+                // Tenta carregar o último wallpaper salvo ou o padrão
+                const savedWp = localStorage.getItem('ios_wallpaper') || 'bg1.jpg';
+                screen.style.backgroundImage = `url('assets/${savedWp}')`;
+            }
+        });
+    </script>
+
+</body>
+</html>

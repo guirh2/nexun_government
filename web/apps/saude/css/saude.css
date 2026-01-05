@@ -1,0 +1,1005 @@
+:root {
+    --primary: #d62828;
+    --success: #10b981;
+    --info: #3b82f6;
+    --bg: #f3f4f6;
+    --sidebar: #ffffff;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { height: 100vh; width: 100vw; overflow: hidden; background: var(--bg); color: var(--text-main); }
+
+.app-container { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
+
+/* ESTRUTURA DA SIDEBAR */
+.nav-sidebar { 
+    background: #ffffff; 
+    border-right: 1px solid #e5e7eb; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    width: 260px;
+    flex-shrink: 0;
+}
+
+/* BRANDING MINIMALISTA CENTRALIZADO */
+.nav-brand-minimal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.nav-brand-minimal img { 
+    width: 210px; /* Aumentado para compensar a falta de texto */
+    height: auto; 
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.nav-brand-minimal img:hover {
+    transform: scale(1.05);
+}
+
+/* ÁREA DE SCROLL */
+.nav-scroll { 
+    flex: 1; 
+    overflow-y: auto; 
+    padding: 0 15px; 
+}
+
+/* Customização do Scroll para não poluir o visual */
+.nav-scroll::-webkit-scrollbar { width: 4px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: #f1f5f9; border-radius: 10px; }
+
+/* RÓTULOS DE GRUPO */
+.group-label { 
+    display: block; 
+    font-size: 9px; 
+    font-weight: 800; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    letter-spacing: 1.2px; 
+    margin: 20px 0 8px 12px;
+}
+
+/* ITENS DO MENU */
+.nav-item { 
+    padding: 12px 16px; 
+    border-radius: 10px; 
+    color: #64748b; 
+    font-weight: 600; 
+    font-size: 13px; 
+    margin-bottom: 3px; 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+}
+
+.nav-item i { 
+    font-size: 16px; 
+    width: 20px; 
+    text-align: center;
+}
+
+.nav-item:hover { 
+    background: #f8fafc; 
+    color: #1e293b; 
+}
+
+/* ITEM ATIVO (Vermelho Suave conforme imagem) */
+.nav-item.active { 
+    background: #fff1f2; 
+    color: #e11d48; 
+}
+
+/* RODAPÉ STATUS */
+.nav-footer-status {
+    padding: 25px;
+    border-top: 1px solid #f1f5f9;
+    background: #ffffff;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.status-text { 
+    font-size: 10px; 
+    font-weight: 800; 
+    color: #cbd5e1; /* Cor mais sutil no rodapé */
+    letter-spacing: 1px;
+}
+.logo-box { width: 38px; height: 38px; background: var(--primary); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.brand-text h3 { font-size: 16px; font-weight: 900; }
+.brand-text p { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+
+.nav-group { flex: 1; }
+.nav-item { padding: 12px 14px; border-radius: 10px; color: var(--text-muted); font-weight: 600; font-size: 13px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.nav-item.active { background: #fef2f2; color: var(--primary); }
+
+.nav-footer { border-top: 1px solid #f3f4f6; padding-top: 15px; }
+.user-pill { display: flex; align-items: center; gap: 8px; font-size: 11px; margin-bottom: 10px; }
+.online-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; }
+.btn-exit { width: 100%; padding: 12px; border: none; background: var(--text-main); color: white; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px; }
+
+/* MAIN CONTENT */
+.main-content { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.top-header { padding: 0 30px; height: 70px; display: flex; justify-content: space-between; align-items: center; background: white; flex-shrink: 0; }
+.header-info h2 { font-size: 18px; font-weight: 800; }
+.header-date { font-size: 11px; font-weight: 700; color: var(--text-muted); background: #f3f4f6; padding: 6px 12px; border-radius: 15px; }
+
+/* VIEWPORT DINÂMICA (Ajusta o conteúdo para caber na tela) */
+.content-view { padding: 20px 30px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; min-height: 0; }
+
+/* FINANCE HERO */
+.finance-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 0.8; } /* flex: 0.8 dá peso à parte financeira */
+.hero-card { background: white; padding: 25px; border-radius: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.hero-card label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+.hero-card h1 { font-size: 42px; font-weight: 900; margin-bottom: 10px; letter-spacing: -1.5px; }
+.balance h1 { color: var(--success); }
+.investment h1 { color: var(--info); }
+.hero-tag { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+.hero-tag.success { background: #ecfdf5; color: #065f46; }
+.hero-tag.info { background: #eff6ff; color: #1e40af; }
+
+/* OPERATIONAL GRID */
+.operational-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; flex: 1; margin-top: 10px; }
+.op-card { background: white; padding: 15px; border-radius: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid rgba(0,0,0,0.02); }
+.op-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.op-header i { color: var(--primary); font-size: 14px; }
+.op-header label { font-size: 9px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+.op-card h2 { font-size: 28px; font-weight: 900; line-height: 1; }
+.subtext { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+
+/* FOOTER DISCRETO */
+.legal-footer { text-align: center; font-size: 10px; color: var(--text-muted); font-weight: 600; padding: 10px 0; opacity: 0.6; flex-shrink: 0; }
+
+/* Container que segura as abas */
+.content-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Impede que o conteúdo empurre o rodapé */
+    position: relative;
+}
+
+/* Estilo base das telas */
+.tab-view {
+    display: none; /* Escondido por padrão */
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Quando a tela está ativa */
+.tab-view.active {
+    display: flex;
+}
+
+/* Animação de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilo da Tabela de Frota (App de Governo) */
+.gov-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-container { flex: 1; overflow-y: auto; margin-top: 20px; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+.data-table th { padding: 12px; font-size: 11px; text-transform: uppercase; color: #888; border-bottom: 2px solid #f4f7fa; }
+.data-table td { padding: 15px 12px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #f4f7fa; }
+
+.tag-ok { color: #10b981; background: #ecfdf5; padding: 4px 8px; border-radius: 6px; font-size: 10px; }
+.tag-danger { color: #d62828; background: #fef2f2; padding: 4px 8px; border-radius: 6px; font-size: 10px; }
+
+/* Painel de Aquisição */
+.acquisition-panel {
+    background: #1a1c1e;
+    color: white;
+    padding: 25px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.panel-info h3 { font-size: 18px; margin-bottom: 5px; }
+.panel-info p { font-size: 12px; color: #aaa; }
+
+.panel-actions { display: flex; gap: 15px; }
+.btn-buy { 
+    padding: 12px 20px; border-radius: 10px; border: 1px solid #444; 
+    background: transparent; color: white; font-weight: 800; cursor: pointer; transition: 0.3s;
+}
+.btn-buy.primary { background: var(--success); border-color: var(--success); }
+.btn-buy:hover { transform: scale(1.05); }
+
+/* Barra de Conservação */
+.health-bar { width: 80px; height: 6px; background: #eee; border-radius: 10px; overflow: hidden; }
+.health-bar .fill { height: 100%; background: var(--success); }
+.health-bar .fill.warning { background: var(--warning); }
+.health-bar .fill.danger { background: var(--primary); }
+
+/* Placa do Veículo */
+.plate { background: #222; color: #f1f1f1; padding: 4px 8px; border-radius: 4px; font-family: 'Courier New', monospace; font-weight: 900; }
+
+/* Ações de Baixa */
+.btn-low { 
+    background: #f8f9fa; border: 1px solid #ddd; padding: 6px 10px; 
+    border-radius: 6px; font-size: 10px; font-weight: 800; cursor: pointer; color: #666;
+}
+.btn-low:hover { background: #fef2f2; color: var(--primary); border-color: var(--primary); }
+.vtr-lost { opacity: 0.6; background: #fff5f5; }
+
+/* Container da Loja */
+.store-section { margin-bottom: 30px; }
+.section-title { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; color: #334155; }
+.section-title i { font-size: 24px; color: #d62828; }
+
+/* Grid de Produtos */
+.store-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.store-item { 
+    background: white; border-radius: 15px; padding: 20px; border: 1px solid #e2e8f0;
+    text-align: center; position: relative; transition: 0.3s;
+}
+.store-item:hover { transform: translateY(-3px); border-color: #d62828; }
+.item-icon { font-size: 30px; color: #cbd5e1; margin-bottom: 10px; display: block; }
+
+/* Badges e Preços */
+.item-badge { position: absolute; top: 12px; right: 12px; font-size: 9px; font-weight: 900; background: #f1f5f9; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+.item-badge.primary { background: #fee2e2; color: #b91c1c; }
+.item-badge.info { background: #e0f2fe; color: #0369a1; }
+.price { display: block; font-weight: 900; font-size: 18px; margin: 10px 0; color: #1e293b; }
+
+/* Botões Estilo Loja */
+.btn-buy-light {
+    width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #f1f5f9;
+    background: #f8fafc; color: #64748b; font-weight: 800; cursor: pointer;
+}
+.btn-buy-light.primary { background: #d62828; border-color: #d62828; color: white; }
+.btn-buy-light:hover { opacity: 0.9; }
+
+/* Barras e Tabela (Ajuste Light) */
+.health-bar { width: 100%; height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+.health-bar .fill { height: 100%; background: #10b981; }
+/* Garante que o container principal não estoure a tela */
+.main-content {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Trava o scroll no corpo principal */
+}
+
+/* Área onde o conteúdo realmente aparece */
+.content-view {
+    flex: 1;
+    padding: 20px 40px;
+    overflow-y: auto; /* ATIVA O SCROLL AQUI */
+    scroll-behavior: smooth;
+}
+
+/* Estilização da barra de scroll para ficar discreta (Tema Light) */
+.content-view::-webkit-scrollbar {
+    width: 6px;
+}
+.content-view::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+.content-view::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Ajuste para as seções não ficarem coladas no fim da página */
+.tab-view {
+    padding-bottom: 50px; 
+}
+
+.nav-group {
+    margin-bottom: 25px;
+}
+
+.group-label {
+    display: block;
+    color: #94a3b8; /* Cinza claro */
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 20px 8px 20px;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.main-title {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.sub-title {
+    font-size: 10px;
+    color: #cbd5e1;
+}
+
+.nav-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: #64748b;
+    border-top: 1px solid #334155;
+    padding-top: 10px;
+}
+
+/* Ajuste para botões de ação dentro da tabela */
+.data-table .btn-buy-light.primary {
+    margin: 0;
+    width: auto;
+    min-width: 80px;
+}
+
+.data-table .btn-low {
+    transition: 0.2s;
+}
+
+.data-table .btn-low:hover {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border-color: #cbd5e1;
+}
+
+/* Badge de Vacante (Vermelho do Ministério) */
+.tag-danger {
+    color: #e11d48;
+    background: #fff1f2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* Cards de Nomeação */
+.gov-card-appointment {
+    text-align: left !important;
+    align-items: flex-start !important;
+    padding: 25px !important;
+    min-height: 200px;
+    justify-content: space-between !important;
+}
+
+.appointment-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.appointment-header i {
+    margin-bottom: 0 !important;
+    font-size: 24px !important;
+    opacity: 0.5;
+}
+
+.gov-card-appointment h2 {
+    font-size: 18px !important;
+    margin: 10px 0 !important;
+    color: var(--text-main);
+}
+
+.appointment-actions {
+    width: 100%;
+    margin-top: 20px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+}
+
+/* Destaque para Cargo Vacante */
+.highlight-vacant {
+    border: 1px dashed #e11d48 !important;
+    background: #fff8f8 !important;
+}
+
+.highlight-vacant h2 {
+    color: #94a3b8 !important;
+    font-style: italic;
+}
+
+/* --- ESTILO DOS CARDS DE NOMEAÇÃO --- */
+.gov-card-appointment {
+    text-align: left !important;
+    align-items: flex-start !important;
+    padding: 25px !important;
+    min-height: 220px;
+    justify-content: space-between !important;
+    position: relative;
+}
+
+.appointment-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.appointment-header i {
+    font-size: 24px !important;
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.highlight-vacant {
+    border: 2px dashed #f1f5f9 !important;
+    background: #fafafa !important;
+}
+
+.tag-danger {
+    background: #fff1f2;
+    color: #e11d48;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.tag-ok {
+    background: #ecfdf5;
+    color: #10b981;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* --- MODAL DE NOMEAÇÃO --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    width: 420px;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalShow 0.3s ease-out;
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-header h4 { font-size: 16px; font-weight: 800; text-transform: uppercase; color: #1e293b; }
+.close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8; }
+
+.modal-body label { display: block; font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
+.modal-body input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; font-size: 16px; }
+.modal-body textarea { width: 100%; height: 80px; padding: 12px; background: #f8fafc; border: none; border-radius: 12px; font-size: 12px; color: #64748b; resize: none; }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 25px; }
+.btn-cancel { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer; }
+.btn-confirm { flex: 2; padding: 12px; border-radius: 12px; border: none; background: #e11d48; color: white; font-weight: 700; cursor: pointer; }
+
+/* --- NOTIFICAÇÕES (TOASTS) --- */
+#notification-container { position: fixed; top: 30px; right: 30px; z-index: 10000; }
+
+.gov-notification {
+    background: white;
+    border-left: 6px solid #10b981;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    min-width: 320px;
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.gov-notification i { font-size: 24px; color: #10b981; }
+.notif-content b { display: block; font-size: 14px; color: #1e293b; text-transform: uppercase; }
+.notif-content span { font-size: 12px; color: #64748b; }
+
+@keyframes modalShow { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+
+/* Isso garante que o modal comece escondido */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Isso garante que as abas (seções) comecem escondidas, exceto a ativa */
+.tab-view {
+    display: none;
+}
+
+.tab-view.active {
+    display: flex; /* Ou block, dependendo do seu layout */
+}
+
+/* Força o fechamento independente de qualquer outra regra */
+.modal-hide {
+    display: none !important;
+}
+
+.modal-overlay {
+    display: none; /* Começa escondido */
+    position: fixed;
+    /* ... resto do seu código ... */
+    z-index: 9999;
+}
+
+/* Container de Notificações */
+#notification-container {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Base da Notificação */
+.gov-toast {
+    background: white;
+    min-width: 300px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 6px solid #ccc;
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transition: all 0.3s ease;
+}
+
+/* Cores por Tipo */
+.gov-toast.success { border-left-color: #10b981; }
+.gov-toast.error { border-left-color: #ef4444; }
+
+.gov-toast i { font-size: 20px; }
+.gov-toast.success i { color: #10b981; }
+.gov-toast.error i { color: #ef4444; }
+
+.toast-content b {
+    display: block;
+    font-size: 13px;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.toast-content span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Animação */
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.toast-fade-out {
+    opacity: 0;
+    transform: translateX(50px);
+}
+
+/* Filtros */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding-left: 5px;
+}
+
+.btn-filter {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-filter.active {
+    background: #e11d48;
+    color: white;
+    border-color: #e11d48;
+}
+
+/* Cards de Itens */
+.item-card {
+    position: relative;
+    padding: 25px !important;
+    transition: transform 0.2s;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+}
+
+.item-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 4px 8px;
+    background: #f1f5f9;
+    color: #64748b;
+    border-radius: 5px;
+}
+
+.item-badge.primary { background: #fff1f2; color: #e11d48; }
+.item-badge.info { background: #eff6ff; color: #3b82f6; }
+
+.item-icon {
+    font-size: 35px !important;
+    color: #cbd5e1;
+    margin-bottom: 20px !important;
+}
+
+.item-footer {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.price {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 15px;
+}
+
+.btn-buy {
+    background: #1e293b;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-buy:hover { background: #0f172a; }
+
+/* Garante que o grid de aquisições ocupe o espaço correto */
+#view-aquisicoes.active {
+    display: flex !important;
+    flex-direction: column;
+}
+
+.operational-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+/* Estilo idêntico à imagem para os botões de Nomeação */
+.btn-confirm-rh {
+    width: 100%;
+    background: #e11d48 !important; /* Vermelho da imagem */
+    color: white !important;
+    border: none !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    font-weight: 900 !important;
+    font-size: 14px !important;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: auto; /* Empurra o botão para o fim do card */
+    transition: transform 0.2s, background 0.2s;
+}
+
+.btn-confirm-rh:hover {
+    background: #be123c !important;
+    transform: scale(1.02);
+}
+
+/* Ajuste do Card para alinhar os elementos como na foto */
+.gov-card-appointment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 20px !important;
+    min-height: 280px !important; /* Altura maior para caber o botão grande */
+}
+
+.gov-card-appointment h2 {
+    font-style: italic;
+    color: #94a3b8;
+    margin: 10px 0 20px 0 !important;
+}
+
+/* Cor especial para itens de medicamentos */
+.item-card[data-type="medicamentos"] .item-icon {
+    color: #0d9488 !important; /* Verde Esmeralda/Hospitalar */
+}
+
+.item-card[data-type="medicamentos"] .item-badge.primary {
+    background: #f0fdfa !important;
+    color: #0d9488 !important;
+    border: 1px solid #ccfbf1;
+}
+
+.item-card[data-type="medicamentos"]:hover {
+    border-color: #0d9488;
+    box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.1);
+}
+
+/* Destaque para as UTIs (USA) */
+.item-card[data-type="terrestre"] .item-icon {
+    color: #e11d48; /* Vermelho padrão para viaturas */
+}
+
+/* Se quiser diferenciar a UTI Neonatal com uma cor azulada */
+.item-card:has(.fa-baby-carriage) .item-icon {
+    color: #0ea5e9 !important;
+}
+
+/* Efeito ao passar o rato (hover) para dar profundidade */
+.item-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 10px 20px rgba(225, 29, 72, 0.1);
+}
+
+
+
+/* ============================================================
+   ESTILO PARA CENTRO CIRÚRGICO
+   ============================================================ */
+
+.item-card[data-type="cirurgico"] .item-icon {
+    color: #8b5cf6 !important; /* Roxo / Violeta */
+}
+
+.item-card[data-type="cirurgico"] .item-badge.info {
+    background: #f5f3ff !important;
+    color: #6d28d9 !important;
+    border: 1px solid #ddd6fe;
+}
+
+.item-card[data-type="cirurgico"]:hover {
+    border-color: #8b5cf6;
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.15);
+}
+
+.item-card[data-type="cirurgico"] .btn-buy {
+    background: #8b5cf6;
+}
+
+.item-card[data-type="cirurgico"] .btn-buy:hover {
+    background: #7c3aed;
+}
+
+/* Efeito de destaque no card selecionado */
+.item-card {
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.item-card:hover {
+    border-color: rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Deixa o ícone levemente transparente quando não está no hover */
+.item-icon {
+    opacity: 0.85;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.item-card:hover .item-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+/* --- ESTILO GESTÃO DE FROTA --- */
+.health-bar {
+    width: 120px;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.health-bar .fill {
+    height: 100%;
+    background: var(--success); /* Verde para 70-100% */
+    transition: width 0.5s ease-in-out;
+}
+
+.health-bar .fill.warning {
+    background: #f59e0b; /* Laranja para 40-69% */
+}
+
+.health-bar .fill.danger {
+    background: var(--primary); /* Vermelho para < 40% */
+}
+
+.plate {
+    background: #1e293b;
+    color: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-weight: 900;
+    font-size: 11px;
+}
+
+.data-table td i {
+    margin-right: 8px;
+    color: var(--text-muted);
+}
+/* Viatura em manutenção */
+.vtr-in-repair {
+    opacity: 0.6;
+    background: #f8fafc;
+    pointer-events: none; /* Impede novos cliques enquanto repara */
+}
+
+.tag-info {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/* Animação de pulso para indicar que o trabalho está sendo feito */
+.vtr-in-repair .tag-info {
+    animation: pulse-repair 2s infinite;
+}
+
+@keyframes pulse-repair {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Status Aguardando o jogador levar o carro */
+.tag-waiting {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    border: 1px solid #f59e0b;
+}
+
+/* Botão de Check-in na Oficina */
+.btn-checkin {
+    background: #10b981 !important;
+    color: white !important;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+/* --- ESTILO DOS CARDS DE EQUIPAMENTOS (INVENTÁRIO) --- */
+.equip-status-card {
+    min-height: 220px !important;
+    justify-content: space-between !important;
+    padding: 20px !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+    border-left: 5px solid var(--info);
+}
+
+.equip-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.equip-header i {
+    font-size: 24px;
+    color: var(--info);
+}
+
+.equip-body h4 {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.equip-body p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.maintenance-info {
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.maintenance-info span {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.maintenance-info small {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.stat-mini-card {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-mini-card .label { font-size: 10px; font-weight: 800; color: #94a3b8; }
+.stat-mini-card .value { font-size: 18px; font-weight: 900; }

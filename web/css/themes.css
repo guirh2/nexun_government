@@ -1,0 +1,115 @@
+/* Tema Claro (Default) */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f1f3f4;
+    
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    
+    --border-light: #e5e7eb;
+    --border-medium: #d1d5db;
+    
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Tema Escuro */
+.theme-dark {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    
+    --border-light: #374151;
+    --border-medium: #4b5563;
+    
+    --primary-color: #60a5fa;
+    --primary-hover: #93c5fd;
+    
+    --success-color: #34d399;
+    --warning-color: #fbbf24;
+    --danger-color: #f87171;
+}
+
+/* Aplicar tema escuro ao body */
+body.dark-theme .tablet-container {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body.dark-theme .app-header,
+body.dark-theme .app-card,
+body.dark-theme .modal-content {
+    background: var(--bg-secondary);
+    border-color: var(--border-light);
+    color: var(--text-primary);
+}
+
+body.dark-theme .status-bar {
+    background: rgba(31, 41, 55, 0.95);
+}
+
+body.dark-theme .app-dock {
+    background: rgba(31, 41, 55, 0.8);
+    border-top-color: var(--border-light);
+}
+
+body.dark-theme .btn-icon {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+}
+
+body.dark-theme .btn-icon:hover {
+    background: var(--border-light);
+}
+
+body.dark-theme .modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-theme .toast {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Toggle Theme Button */
+.theme-toggle {
+    position: absolute;
+    top: 90px;
+    right: 30px;
+    z-index: 100;
+}
+
+.theme-toggle button {
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
+    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle button:hover {
+    background: var(--border-light);
+    transform: rotate(30deg);
+}
