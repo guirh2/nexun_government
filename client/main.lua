@@ -94,7 +94,6 @@
 -- Cliente principal do Sistema de Governo
 
 local QBCore = exports['qb-core']:GetCoreObject()
-local Config = require('config')
 
 -- ============================================
 -- VARIÁVEIS DO CLIENTE
