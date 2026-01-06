@@ -1,114 +1,204 @@
+-- server/main.lua - VERSÃO FUNCIONAL SIMPLES
 local QBCore = exports['qb-core']:GetCoreObject()
 
--- [[ 1. CALLBACKS DE VERIFICAÇÃO ]] --
+print('[GOV-MAIN] Sistema de governo iniciando...')
 
--- Verifica se a Secretaria tem saldo para compras macro (Viaturas/Lotes de Armas)
-QBCore.Functions.CreateCallback('nexun_government:server:canSecretariaAfford', function(source, cb, dept, price)
-    local treasury = MySQL.single.await('SELECT * FROM government_treasury WHERE id = 1')
-    local balanceField = (dept == 'saude') and "budget_saude_balance" or "budget_seguranca_balance"
+-- ============================================
+-- FUNÇÕES BÁSICAS
+-- ============================================
+
+function GetStateInfo()
+    local stateData = MySQL.Sync.fetchSingle('SELECT * FROM government_state WHERE id = 1')
     
-    if treasury[balanceField] >= price then
-        cb(true)
+    if stateData then
+        return {
+            balance = stateData.account_balance or 0,
+            health_balance = stateData.health_balance or 0,
+            security_balance = stateData.security_balance or 0,
+            finance_balance = stateData.finance_balance or 0,
+            taxes = {
+                iptu = stateData.tax_iptu or 1.0,
+                ipva = stateData.tax_ipva or 4.0,
+                inss = stateData.tax_inss or 8.0,
+                fuel = stateData.tax_fuel or 25.0,
+                business = stateData.tax_business or 15.0,
+                iss = stateData.tax_iss or 5.0,
+                iof = stateData.tax_iof or 0.38,
+                icms = stateData.tax_icms or 18.0
+            }
+        }
     else
-        cb(false)
+        return {
+            balance = 10000000.00,
+            health_balance = 2000000.00,
+            security_balance = 2000000.00,
+            finance_balance = 6000000.00,
+            taxes = {
+                iptu = 1.0,
+                ipva = 4.0,
+                inss = 8.0,
+                fuel = 25.0,
+                business = 15.0,
+                iss = 5.0,
+                iof = 0.38,
+                icms = 18.0
+            }
+        }
     end
-end)
-
--- [[ 2. GESTÃO DE TRANSFERÊNCIAS (SECRETÁRIO -> BATALHÃO) ]] --
-
-RegisterNetEvent('nexun_government:server:transferToUnit', function(dept, unitId, amount)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    amount = tonumber(amount)
-
-    if not Player or amount <= 0 then return end
-
-    -- 1. Retira do saldo da Secretaria
-    local balanceField = (dept == 'saude') and "budget_saude_balance" or "budget_seguranca_balance"
-    local treasury = MySQL.single.await('SELECT * FROM government_treasury WHERE id = 1')
-
-    if treasury[balanceField] >= amount then
-        -- 2. Deduz da Secretaria e adiciona ao Batalhão/Hospital
-        MySQL.update('UPDATE government_treasury SET '..balanceField..' = '..balanceField..' - ? WHERE id = 1', {amount})
-        MySQL.update('UPDATE government_units SET budget_balance = budget_balance + ? WHERE unit_id = ?', {amount, unitId})
-
-        -- 3. Sync e Log
-        TriggerEvent('nexun_government:server:syncAllFinance')
-        TriggerEvent('nexun_government:server:syncUnitData', unitId, (dept == 'saude' and 'ambulance' or 'police'))
-        
-        TriggerEvent('nexun_government:server:DiscordLog', dept, 'Transferência de Verba', 
-            string.format("O Secretário %s enviou R$ %s para a unidade %s", Player.PlayerData.charinfo.firstname, amount, unitId))
-    else
-        TriggerClientEvent('QBCore:Notify', src, "A Secretaria não possui este saldo disponível.", "error")
-    end
-end)
-
--- [[ 3. PROCESSAMENTO DE COMPRAS E LOGÍSTICA (HUBS) ]] --
-
-RegisterNetEvent('nexun_government:server:processSecurityPurchase', function(data)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local price = tonumber(data.price)
-
-    -- Deduz o valor da Secretaria de Segurança
-    MySQL.update('UPDATE government_treasury SET budget_seguranca_balance = budget_seguranca_balance - ? WHERE id = 1', {price})
-
-    -- Gera os dados dos itens (com seriais únicos se for arma)
-    local itemsToDeliver = {}
-    if data.type == 'weapon' then
-        local serial = GenerateUniqueGovSerial('seguranca') -- Função que definimos antes
-        table.insert(itemsToDeliver, {model = data.model, label = data.label, serial = serial})
-    else
-        table.insert(itemsToDeliver, {model = data.model, label = data.label})
-    end
-
-    -- Cria a entrega no Banco de Dados
-    local deliveryId = MySQL.insert.await([[
-        INSERT INTO government_deliveries (hub_origin, destiny_unit, items_data, status, type) 
-        VALUES (?, ?, ?, 'waiting', 'seguranca')
-    ]], {data.hubId, data.unitDestiny, json.encode(itemsToDeliver)})
-
-    -- Gera o Manifesto Físico para o transportador
-    local info = {
-        deliveryId = deliveryId,
-        origin = data.hubId,
-        destiny = data.unitDestiny,
-        items = itemsToDeliver
-    }
-    exports.ox_inventory:AddItem(src, 'manifesto_gov', 1, info)
-
-    TriggerEvent('nexun_government:server:syncAllFinance')
-    TriggerEvent('nexun_government:server:syncLogistics')
-end)
-
--- [[ 4. MANUTENÇÃO REQUISITADA PELO BATALHÃO ]] --
-
-QBCore.Functions.CreateCallback('nexun_government:server:unitRepairVehicle', function(source, cb, plate, cost)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local unitId = GetPlayerUnitId(Player) -- Função auxiliar para identificar o batalhão do player
-    
-    local unit = MySQL.single.await('SELECT budget_balance FROM government_units WHERE unit_id = ?', {unitId})
-
-    if unit and unit.budget_balance >= cost then
-        -- Deduz da verba do batalhão
-        MySQL.update('UPDATE government_units SET budget_balance = budget_balance - ? WHERE unit_id = ?', {cost, unitId})
-        
-        -- Aqui você integraria com seu script de mecânico ou apenas resetaria o dano no banco
-        MySQL.update('UPDATE player_vehicles SET engine = 1000, body = 1000 WHERE plate = ?', {plate})
-        
-        TriggerEvent('nexun_government:server:syncUnitData', unitId, Player.PlayerData.job.name)
-        cb(true, "Manutenção realizada com sucesso!")
-    else
-        cb(false, "Verba do batalhão insuficiente!")
-    end
-end)
-
--- [[ HELPERS ]] --
-
-function GetPlayerUnitId(Player)
-    -- Lógica simples: retorna o ID do batalhão baseado na configuração do job
-    for id, unit in pairs(Config.SecurityDept.Units) do
-        if unit.job == Player.PlayerData.job.name then return id end
-    end
-    return nil
 end
+
+function GetStateBalance()
+    local state = GetStateInfo()
+    return state.balance or 0
+end
+
+function GetCurrentTaxes()
+    local state = GetStateInfo()
+    return state.taxes or {}
+end
+
+function UpdateTaxRate(taxType, newRate, authorizedBy)
+    if not taxType or not newRate then
+        return false, "Parâmetros inválidos"
+    end
+    
+    -- Mapear colunas
+    local columnMap = {
+        iptu = 'tax_iptu',
+        ipva = 'tax_ipva',
+        inss = 'tax_inss',
+        fuel = 'tax_fuel',
+        business = 'tax_business',
+        iss = 'tax_iss',
+        iof = 'tax_iof',
+        icms = 'tax_icms'
+    }
+    
+    local column = columnMap[taxType]
+    if not column then
+        return false, "Tipo de imposto inválido"
+    end
+    
+    local success = MySQL.Sync.execute(
+        'UPDATE government_state SET ' .. column .. ' = ? WHERE id = 1',
+        {newRate}
+    )
+    
+    if success then
+        -- Log
+        MySQL.Sync.insert([[
+            INSERT INTO government_logs 
+            (log_type, log_category, title, description, player_name)
+            VALUES (?, ?, ?, ?, ?)
+        ]], {
+            'impostos',
+            'alteracao_taxa',
+            'Alteração de Taxa',
+            string.format('%s alterou %s para %.2f%%', authorizedBy, taxType, newRate),
+            authorizedBy
+        })
+        
+        return true, "Taxa atualizada com sucesso"
+    end
+    
+    return false, "Erro ao atualizar taxa"
+end
+
+-- ============================================
+-- EVENTOS
+-- ============================================
+
+RegisterNetEvent('government:server:getStateInfo', function()
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    
+    if not Player then return end
+    
+    -- Verificar se é do governo
+    if Player.PlayerData.job.name ~= Config.JobName then
+        TriggerClientEvent('QBCore:Notify', src, 'Apenas funcionários do governo', 'error')
+        return
+    end
+    
+    local stateInfo = GetStateInfo()
+    TriggerClientEvent('government:client:receiveStateInfo', src, stateInfo)
+end)
+
+RegisterNetEvent('government:server:updateTaxRate', function(taxType, newRate)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    
+    if not Player then return end
+    
+    -- Verificar permissão (apenas Sec. Fazenda+)
+    local grade = Player.PlayerData.job.grade.level
+    if grade < 4 then
+        TriggerClientEvent('QBCore:Notify', src, 'Apenas Secretário da Fazenda+', 'error')
+        return
+    end
+    
+    local success, message = UpdateTaxRate(
+        taxType, 
+        newRate, 
+        Player.PlayerData.charinfo.firstname .. ' ' .. Player.PlayerData.charinfo.lastname
+    )
+    
+    TriggerClientEvent('QBCore:Notify', src, message, success and 'success' or 'error')
+end)
+
+-- ============================================
+-- COMANDOS DE TESTE
+-- ============================================
+
+RegisterCommand('govtest', function(source, args)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    
+    if Player then
+        TriggerClientEvent('QBCore:Notify', src, 'Sistema de Governo OK!', 'success')
+        
+        -- Mostrar saldo
+        local balance = GetStateBalance()
+        TriggerClientEvent('QBCore:Notify', src, 
+            string.format('Saldo do Estado: R$ %.2f', balance), 
+            'primary')
+    end
+end, false)
+
+-- ============================================
+-- INICIALIZAÇÃO
+-- ============================================
+
+AddEventHandler('onResourceStart', function(resourceName)
+    if GetCurrentResourceName() == resourceName then
+        print('[GOV-MAIN] Sistema inicializado')
+        
+        -- Verificar/Criar estado
+        local stateData = MySQL.Sync.fetchSingle('SELECT * FROM government_state WHERE id = 1')
+        if not stateData then
+            MySQL.Sync.execute([[
+                INSERT INTO government_state 
+                (account_balance, health_balance, security_balance, finance_balance,
+                 tax_iptu, tax_ipva, tax_inss, tax_fuel, tax_business, tax_iss, tax_iof, tax_icms)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ]], {
+                10000000.00, 2000000.00, 2000000.00, 6000000.00,
+                1.0, 4.0, 8.0, 25.0, 15.0, 5.0, 0.38, 18.0
+            })
+            print('[GOV-MAIN] Estado inicial criado')
+        end
+        
+        print('[GOV-MAIN] Pronto para uso')
+    end
+end)
+
+-- ============================================
+-- EXPORTS
+-- ============================================
+
+exports('GetStateInfo', GetStateInfo)
+exports('GetStateBalance', GetStateBalance)
+exports('GetCurrentTaxes', GetCurrentTaxes)
+exports('UpdateTaxRate', UpdateTaxRate)
+
+print('[GOV-MAIN] Carregado com sucesso')

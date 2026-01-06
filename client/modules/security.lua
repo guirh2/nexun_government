@@ -1,112 +1,238 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-Security = {}
+-- client/modules/security.lua
+-- Módulo de segurança do cliente
 
--- Cache de dados da Unidade (Batalhão)
-local unitData = {
-    id = nil,
-    label = "",
-    budget = 0, -- Verba local do batalhão (atribuída pelo Secretário)
-    fleet = {},
-    deliveries = {}
+local QBCore = exports['qb-core']:GetCoreObject()
+local Security = {}
+
+-- ============================================
+-- VARIÁVEIS
+-- ============================================
+local SecurityData = {
+    balance = 0,
+    policeUnits = {},
+    arsenal = {},
+    vehicles = {},
+    manifests = {},
+    maintenance = {}
 }
 
--- [[ 1. GESTÃO FINANCEIRA DO BATALHÃO ]] --
+-- ============================================
+-- FUNÇÕES PRINCIPAIS
+-- ============================================
 
---- Atualiza o saldo local do batalhão quando o Secretário envia verba
-RegisterNetEvent('nexun_government:client:updateUnitBudget', function(newBudget)
-    unitData.budget = newBudget
+function Security.GetSecurityData()
+    return SecurityData
+end
+
+function Security.UpdateSecurityData(data)
+    if data.balance then
+        SecurityData.balance = data.balance
+    end
+    
+    if data.vehicles then
+        SecurityData.vehicles = data.vehicles
+    end
+    
+    if data.manifests then
+        SecurityData.manifests = data.manifests
+    end
+end
+
+-- ============================================
+-- FUNÇÕES DE ARSENAL
+-- ============================================
+
+function Security.GetArsenalStock()
+    TriggerServerEvent('government:server:getArsenalStock')
+end
+
+function Security.PurchaseWeapons(weapons)
+    if not weapons or #weapons == 0 then
+        QBCore.Functions.Notify('Nenhuma arma selecionada', 'error')
+        return false
+    end
+    
+    local total = 0
+    for _, weapon in ipairs(weapons) do
+        total = total + (weapon.price * weapon.quantity)
+    end
+    
+    TriggerServerEvent('government:server:purchaseWeapons', weapons, total)
+    
+    return true
+end
+
+-- ============================================
+-- FUNÇÕES DE VIATURAS
+-- ============================================
+
+function Security.GetPoliceVehicles()
+    TriggerServerEvent('government:server:getPoliceVehicles')
+end
+
+function Security.RequestVehicleMaintenance(vehiclePlate, issue, estimatedCost)
+    if not vehiclePlate or not issue then
+        QBCore.Functions.Notify('Dados incompletos', 'error')
+        return false
+    end
+    
+    TriggerServerEvent('government:server:requestVehicleMaintenance', {
+        vehicle_plate = vehiclePlate,
+        issue_description = issue,
+        estimated_cost = estimatedCost or 0
+    })
+    
+    return true
+end
+
+function Security.PurchasePoliceVehicle(model, price)
+    TriggerServerEvent('government:server:purchasePoliceVehicle', model, price)
+end
+
+-- ============================================
+-- FUNÇÕES DE MANIFESTOS
+-- ============================================
+
+function Security.CreateSecurityManifest(items, destination)
+    if not items or #items == 0 then
+        QBCore.Functions.Notify('Nenhum item para manifesto', 'error')
+        return false
+    end
+    
+    local totalItems = 0
+    local totalValue = 0
+    
+    for _, item in ipairs(items) do
+        totalItems = totalItems + item.quantity
+        totalValue = totalValue + (item.price * item.quantity)
+    end
+    
+    local manifestData = {
+        manifest_type = 'security',
+        items = items,
+        total_items = totalItems,
+        total_value = totalValue,
+        destination = destination or 'Delegacia Central',
+        origin = 'Arsenal Estadual'
+    }
+    
+    TriggerServerEvent('government:server:createManifest', manifestData)
+    
+    return true
+end
+
+-- ============================================
+-- FUNÇÕES DE EFETIVO
+-- ============================================
+
+function Security.GetPoliceOnline()
+    TriggerServerEvent('government:server:getPoliceOnline')
+end
+
+-- ============================================
+-- EVENTOS
+-- ============================================
+
+RegisterNetEvent('government:client:receiveSecurityData', function(data)
+    Security.UpdateSecurityData(data)
+    
     SendNUIMessage({
-        action = "updateSecurityUnitBudget",
-        budget = newBudget
+        action = 'updateSecurityData',
+        data = SecurityData
     })
 end)
 
--- [[ 2. MANUTENÇÃO DE VIATURAS (REQUISITADA PELO BATALHÃO) ]] --
-
---- Callback para o Coronel/Gestor solicitar reparo usando a verba da unidade
-RegisterNUICallback('requestVehicleRepair', function(data, cb)
-    -- data.plate: Placa do veículo
-    -- data.cost: Custo do conserto
+RegisterNetEvent('government:client:receiveArsenalStock', function(stockData)
+    SecurityData.arsenal = stockData
     
-    if unitData.budget >= data.cost then
-        -- O servidor retira do saldo do Batalhão e não do Governo Central
-        TriggerServerEvent('nexun_government:server:unitRepairVehicle', data.plate, data.cost)
-        Utils.PlaySound("click")
-        cb({status = 'ok'})
-    else
-        Utils.Notify("O Batalhão não tem verba suficiente para esta manutenção!", "error")
-        cb({status = 'error'})
+    SendNUIMessage({
+        action = 'updateArsenalStock',
+        stock = stockData
+    })
+end)
+
+RegisterNetEvent('government:client:receivePoliceVehicles', function(vehicles)
+    SecurityData.vehicles = vehicles
+    
+    SendNUIMessage({
+        action = 'updatePoliceVehicles',
+        vehicles = vehicles
+    })
+end)
+
+RegisterNetEvent('government:client:receivePoliceOnline', function(onlineData)
+    SecurityData.policeUnits = onlineData
+    
+    SendNUIMessage({
+        action = 'updatePoliceOnline',
+        online = onlineData
+    })
+end)
+
+RegisterNetEvent('government:client:securityPurchaseComplete', function(success, message)
+    QBCore.Functions.Notify(message, success and 'success' or 'error')
+    
+    if success then
+        Security.GetArsenalStock()
     end
 end)
 
--- [[ 3. LOGÍSTICA E COMPRAS DO SECRETÁRIO ]] --
+-- ============================================
+-- NUI CALLBACKS PARA SEGURANÇA
+-- ============================================
 
---- O Secretário de Segurança usa esta função para distribuir verba aos batalhões
-RegisterNUICallback('allocateSecurityBudget', function(data, cb)
-    -- data.targetUnit: ID do Batalhão (ex: 'pm_19bpm')
-    -- data.amount: Quantia a ser enviada
-    
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    -- Verifica se é o Secretário de Segurança (Grade 1 no nosso config)
-    if PlayerData.job.name == Config.GovManagement.JobName and PlayerData.job.grade.level >= 1 then
-        TriggerServerEvent('nexun_government:server:transferToUnit', 'seguranca', data.targetUnit, data.amount)
-        cb('ok')
+RegisterNUICallback('security/getData', function(data, cb)
+    cb(Security.GetSecurityData())
+end)
+
+RegisterNUICallback('security/getArsenal', function(data, cb)
+    Security.GetArsenalStock()
+    cb({ success = true, message = 'Solicitado' })
+end)
+
+RegisterNUICallback('security/purchaseWeapons', function(data, cb)
+    if data.weapons then
+        local success = Security.PurchaseWeapons(data.weapons)
+        cb({ success = success, message = success and 'Compra solicitada' or 'Erro na compra' })
     else
-        Utils.Notify("Apenas o Secretário de Segurança pode distribuir verbas.", "error")
-        cb('error')
+        cb({ success = false, message = 'Nenhuma arma especificada' })
     end
 end)
 
---- Compra de ativos (Viaturas/Armas) pelo Secretário
-RegisterNUICallback('purchaseSecurityAsset', function(data, cb)
-    -- Verifica se a SECRETARIA (e não o batalhão) tem saldo para a compra macro
-    QBCore.Functions.TriggerCallback('nexun_government:server:canSecretariaAfford', function(canAfford)
-        if canAfford then
-            -- Gera o manifesto e a missão no HUB (Porto, Aeroporto, etc)
-            TriggerServerEvent('nexun_government:server:processSecurityPurchase', data)
-            cb('ok')
-        else
-            Utils.Notify("A Secretaria de Segurança está sem verba!", "error")
-            cb('error')
-        end
-    end, 'seguranca', data.price)
+RegisterNUICallback('security/getVehicles', function(data, cb)
+    Security.GetPoliceVehicles()
+    cb({ success = true, message = 'Solicitado' })
 end)
 
--- [[ 4. GESTÃO DE ARSENAL E SERIAIS ]] --
-
---- Sincroniza as armas do batalhão (com seriais únicos SEC-SEG)
-RegisterNetEvent('nexun_government:client:syncUnitArmory', function(armory)
-    SendNUIMessage({
-        action = "updateSecurityArmory",
-        items = armory
-    })
+RegisterNUICallback('security/requestMaintenance', function(data, cb)
+    if data.vehiclePlate and data.issue then
+        local success = Security.RequestVehicleMaintenance(data.vehiclePlate, data.issue, data.estimatedCost)
+        cb({ success = success, message = success and 'Solicitação enviada' or 'Erro na solicitação' })
+    else
+        cb({ success = false, message = 'Dados incompletos' })
+    end
 end)
 
---- Atribuir arma ao oficial (Rastreabilidade total)
-RegisterNUICallback('assignWeapon', function(data, cb)
-    -- data.serial: Serial da arma
-    -- data.citizenid: ID do oficial
-    TriggerServerEvent('nexun_government:server:assignWeaponToOfficer', data.serial, data.citizenid)
-    cb('ok')
+RegisterNUICallback('security/createManifest', function(data, cb)
+    if data.items and data.destination then
+        local success = Security.CreateSecurityManifest(data.items, data.destination)
+        cb({ success = success, message = success and 'Manifesto criado' or 'Erro no manifesto' })
+    else
+        cb({ success = false, message = 'Dados incompletos' })
+    end
 end)
 
--- [[ 5. RASTREAMENTO DE LOGÍSTICA ]] --
-
---- Monitora cargas em movimento para os Hubs
-RegisterNetEvent('nexun_government:client:updateLogistics', function(deliveries)
-    unitData.deliveries = deliveries
-    SendNUIMessage({
-        action = "updateLogisticsUI",
-        deliveries = deliveries
-    })
+RegisterNUICallback('security/getOnline', function(data, cb)
+    Security.GetPoliceOnline()
+    cb({ success = true, message = 'Solicitado' })
 end)
 
-RegisterNUICallback('trackLogistics', function(data, cb)
-    local coords = data.coords
-    SetNewWaypoint(coords.x, coords.y)
-    Utils.Notify("Rastreio de carga governamental ativado.", "success")
-    cb('ok')
+-- ============================================
+-- EXPORTS
+-- ============================================
+
+exports('GetSecurityModule', function()
+    return Security
 end)
 
--- [[ HELPERS ]] --
-exports('GetSecurityData', function() return unitData end)
+print('[GOV-SECURITY] Módulo de segurança carregado')

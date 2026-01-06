@@ -1,28 +1,30 @@
 fx_version 'cerulean'
 game 'gta5'
 
-name 'nexun_government'
 author 'Nexun Dev'
-version '2.0.0'
-description 'Sistema de Governo Avançado - Logística, Impostos e Patrimônio'
+description 'Sistema avançado de Governo'
+version '1.0.0'
 
-shared_scripts {
-    '@qb-core/shared/main.lua',
-    '@ox_lib/init.lua',
-    'config.lua'
-}
-
-client_scripts {
-    'client/utils.lua',
-    'client/modules/*.lua',
-    'client/main.lua'
-}
+-- CORREÇÃO: shared_script (SINGULAR)
+shared_script 'config.lua'
 
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/protect.lua', -- Cadeado de autenticidade
-    'server/modules/*.lua',
-    'server/main.lua'
+    'server/sync.lua',
+    'server/main.lua',
+    'server/taxes.lua',
+    'server/departments.lua',
+    'server/protect.lua'
+}
+
+client_scripts {
+    'client/entry.lua',  -- Adicionei aqui
+    'client/main.lua',
+    'client/tablet.lua',
+    'client/modules/finance.lua',
+    'client/modules/health.lua',
+    'client/modules/logistic.lua',
+    'client/modules/security.lua'
 }
 
 ui_page 'web/index.html'
@@ -31,7 +33,19 @@ files {
     'web/index.html',
     'web/css/*.css',
     'web/js/*.js',
-    'web/assets/**/*',
+    'web/apps/governo/*.html',
+    'web/apps/governo/css/*.css',
+    'web/apps/governo/js/*.js',
+    'web/apps/saude/*.html',
+    'web/apps/saude/css/*.css',
+    'web/apps/saude/js/*.js',
+    'web/assets/*.png',
+    'web/assets/*.jpg'
+}
+
+dependencies {
+    'qb-core',
+    'oxmysql'
 }
 
 lua54 'yes'
